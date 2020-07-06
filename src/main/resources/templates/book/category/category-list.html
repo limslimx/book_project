@@ -9,7 +9,7 @@
 
 <div class="container">
     <div class="py-5 text-center">
-        <h2 th:text="${bookList.get(0).detailCategory} + '도서 리스트'"></h2>
+        <h2 th:id="${bookList.get(0).detailCategory}" th:text="${bookList.get(0).detailCategory} + '도서 리스트'" class="detailCategory"></h2>
     </div>
     <div class="row justify-content-center pt-3">
         <div class="col-sm-8">
@@ -60,6 +60,42 @@
 </div>
 <footer th:replace="fragments.html :: footer"></footer>
 <script th:replace="fragments.html :: form-validation"></script>
-<script th:replace="book-fragments.html :: favorBook-event"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    var favorBook = {
+        add_btn : function (bookName) {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var detailCategory = $("h2[class='detailCategory']").attr("id");
+
+            $.ajax({
+                url: "/favorBook/add/" + bookName,
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+            }).done(function (result) {
+                alert(result + "를 관심도서에 추가하였습니다.");
+                location.href = "/book/category/"+detailCategory;
+            });
+        },
+        delete_btn: function (bookName) {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var detailCategory = $("h2[class='detailCategory']").attr("id");
+
+            $.ajax({
+                url: "/favorBook/delete/" + bookName,
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+            }).done(function (result) {
+                alert(result + "를 관심도서에서 삭제하였습니다.");
+                location.href = "/book/category/"+detailCategory;
+            });
+        }
+    }
+</script>
 </body>
 </html>
