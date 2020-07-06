@@ -1,6 +1,7 @@
 package com.studyproject.bookReview;
 
 import com.studyproject.account.AccountRepository;
+import com.studyproject.account.CurrentUser;
 import com.studyproject.book.BookRepository;
 import com.studyproject.domain.Account;
 import com.studyproject.domain.Book;
@@ -11,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -92,5 +94,23 @@ public class BookReviewService {
         BookReview bookReview = bookReviewRepository.findBookReviewById(bookReviewId);
         bookReview.setOpen(false);
     }
+//
+//    public void insertData(Account account) {
+//
+//        for (int i = 0; i < 30; i++) {
+//            Book book = bookRepository.findBookById(33387L);
+//            BookReview bookReview = BookReview.builder()
+//                    .book(book)
+//                    .title("독서록 작성 테스트")
+//                    .content("독서록 본문입니다.")
+//                    .account(account)
+//                    .isOpen(true)
+//                    .createDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+//                    .modifiedDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+//                    .build();
+//
+//            bookReviewRepository.save(bookReview);
+//        }
+//    }
 
 }

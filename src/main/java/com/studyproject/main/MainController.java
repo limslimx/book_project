@@ -25,10 +25,12 @@ public class MainController {
     private final MainService mainService;
     private final FavorBookRepository favorBookRepository;
     private final BookReviewRepository bookReviewRepository;
+//    private final BookReviewService bookReviewService;
 
     @GetMapping("/")
     public String index(@CurrentUser Account account, Model model) {
         if (account != null) {
+//            bookReviewService.insertData(account);
             List<Book> bookRecommendList = mainService.bookRecommend(account);
             List<String> favorBookList = favorBookRepository.findBookNameByAccountId(account.getId());
             model.addAttribute("bookRecommendList", bookRecommendList);
