@@ -54,7 +54,7 @@ public class BookReviewController {
         }
         log.info("##############success");
         bookReviewService.createBookReview(account, id, bookReviewForm);
-        return "redirect:/";
+        return "redirect:/bookReview/list/" + account.getNickname();
     }
 
     //독서록 리스트 화면 핸들러
