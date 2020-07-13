@@ -23,4 +23,7 @@ public interface FavorBookRepository extends JpaRepository<FavorBook, Long> {
     void updateToNull(@Param("accountId") Long accountId);
 
     void deleteByAccount(Account account);
+
+    @Query("select b.tag from Book b join FavorBook fb on b.id=fb.book.id where fb.account=:account")
+    List<String> findBookTagByAccount(@Param("account") Account account);
 }
