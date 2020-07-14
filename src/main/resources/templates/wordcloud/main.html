@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<head>
+    <style>
+        #wordcloud {
+            width: 100%;
+            height: 700px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div th:replace="fragments.html :: main-nav"></div>
+
+
+<div id="wordcloud"></div>
+
+
+<footer th:replace="fragments.html :: footer"></footer>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/plugins/wordCloud.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    var rList = [
+    /*<![CDATA[*/
+
+    /*[# th:each="word : ${wordCloud}"]*/
+        {word: /*[[${word.wordname}]]*/, count: /*[[${word.wordcount}]]*/},
+    /*[/]*/
+
+    /*]]>*/
+    ];
+
+    am4core.ready(function() {
+        // Themes begin
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+        var chart = am4core.create("wordcloud", am4plugins_wordCloud.WordCloud);
+        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+        series.randomness = 0.1;
+        series.labels.template.tooltipText = "{word}: {value}";
+        series.fontFamily = "Courier New";
+        series.data = rList;
+        series.dataFields.word = "word";
+        series.dataFields.value = "count";
+        series.colors = new am4core.ColorSet();
+        series.colors.passOptions = {};
+
+    });
+</script>
+</div>
+</body>
+</html>
