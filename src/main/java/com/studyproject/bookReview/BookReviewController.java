@@ -54,17 +54,19 @@ public class BookReviewController {
         }
         log.info("##############success");
         bookReviewService.createBookReview(account, id, bookReviewForm);
-        return "redirect:/bookReview/list/" + account.getNickname();
+        return "redirect:/bookReview/list/" + account.getId();
     }
 
     //독서록 리스트 화면 핸들러
-    @GetMapping("/bookReview/list/{nickname}")
-    public String bookReviewList(@CurrentUser Account account, @PathVariable String nickname, Model model) {
-        Account byNickname = accountRepository.findByNickname(nickname);
-        if (byNickname == null) {
+    @GetMapping("/bookReview/list/{id}")
+    public String bookReviewList(@CurrentUser Account account, @PathVariable long id, Model model) {
+        Account byId = accountRepository.findAccountById(id);
+        String nickname = byId.getNickname();
+
+        if (byId == null) {
             throw new IllegalArgumentException(nickname + "에 해당되는 사용자가 없습니다.");
         }
-        List<BookReview> bookReviewList = bookReviewRepository.findByAccount(byNickname);
+        List<BookReview> bookReviewList = bookReviewRepository.findByAccount(byId);
         model.addAttribute("bookReviewList", bookReviewList);
         model.addAttribute("nickname", nickname);
         model.addAttribute("account", account);
@@ -116,20 +118,20 @@ public class BookReviewController {
     public String bookReviewDelete(@CurrentUser Account account, @PathVariable Long bookReviewId, RedirectAttributes attributes) {
         bookReviewService.deleteBookReview(bookReviewId, account);
         attributes.addFlashAttribute("message", "독서록을 삭제하였습니다.");
-        return "redirect:/bookReview/list/" + account.getNickname();
+        return "redirect:/bookReview/list/" + account.getId();
     }
 
     //독서록 공개로 변경 핸들러
     @PostMapping("/bookReview/open/{bookReviewId}")
-    public @ResponseBody String bookReviewOpen(@CurrentUser Account account, @PathVariable Long bookReviewId) {
+    public @ResponseBody long bookReviewOpen(@CurrentUser Account account, @PathVariable Long bookReviewId) {
         bookReviewService.bookReviewOpen(bookReviewId);
-        return account.getNickname();
+        return account.getId();
     }
 
     //독서록 비공개로 변경 핸들러
     @PostMapping("/bookReview/close/{bookReviewId}")
-    public @ResponseBody String bookReviewClose(@CurrentUser Account account, @PathVariable Long bookReviewId) {
+    public @ResponseBody long bookReviewClose(@CurrentUser Account account, @PathVariable Long bookReviewId) {
         bookReviewService.bookReviewClose(bookReviewId);
-        return account.getNickname();
+        return account.getId();
     }
 }

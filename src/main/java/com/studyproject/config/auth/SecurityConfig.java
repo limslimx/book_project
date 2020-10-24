@@ -1,5 +1,6 @@
-package com.studyproject.config;
+package com.studyproject.config.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -8,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity //개발자가 스프링 시큐리티 설정을 직접 하겠다는 의미
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -17,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //페이지별 접근 권한 설정
         http.authorizeRequests()
-                .mvcMatchers("/", "/login", "/sign-up", "check-email-token", "/email-login", "/check-email-login", "/update-password-by-email", "/login-link", "/search/bookReview", "/error").permitAll()
+                .mvcMatchers("/", "/login", "/kakao-login", "/sign-up", "check-email-token", "/email-login", "/check-email-login", "/update-password-by-email", "/login-link", "/search/bookReview", "/error").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .anyRequest().authenticated();
 

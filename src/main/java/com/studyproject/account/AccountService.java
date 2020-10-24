@@ -3,8 +3,6 @@ package com.studyproject.account;
 import com.studyproject.bookReview.BookReviewRepository;
 import com.studyproject.config.AppProperties;
 import com.studyproject.domain.Account;
-import com.studyproject.domain.BookReview;
-import com.studyproject.domain.FavorBook;
 import com.studyproject.favorBook.FavorBookRepository;
 import com.studyproject.mail.EmailMessage;
 import com.studyproject.mail.EmailService;
@@ -26,6 +24,7 @@ import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import java.util.Collections;
+import java.util.HashMap;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,6 +53,17 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
+    //카카오 로그인 시에 회원가입시켜주는 메서드
+    public Account saveNewKakaoAccount(HashMap<String, Object> userInfo) {
+        Account account = Account.builder()
+                .nickname((String) userInfo.get("nickname"))
+                .email((String) userInfo.get("email"))
+                .emailVerified(true)
+                .password(passwordEncoder.encode("12345678"))
+                .build();
+        return accountRepository.save(account);
+    }
+
     private Account saveNewAccount(@Valid SignUpForm signUpForm) {
         Account account = Account.builder()
                 .nickname(signUpForm.getNickname())
@@ -74,6 +84,8 @@ public class AccountService implements UserDetailsService {
         context.setVariable("message", "독서할래 서비스에 가입을 완료하려면 링크를 클릭하세요.");
         context.setVariable("host", appProperties.getHost());
         String message = templateEngine.process("mail/simple-link", context);
+
+        log.info("link: " + context.getVariable("link"));
 
         EmailMessage emailMessage = EmailMessage.builder()
                 .to(newAccount.getEmail())
@@ -97,7 +109,7 @@ public class AccountService implements UserDetailsService {
     public UserDetails loadUserByUsername(String emailOrNickname) throws UsernameNotFoundException {
         log.info("########## loaduserByUsername start! ########## ");
         //db에서 우선 email값으로 계정 정보가 존재하는지 확인해보고 없으면 nickname값으로 확인함
-        Account account = accountRepository.findByEmail(emailOrNickname);
+        Account account = accountRepository.findAccountByEmail(emailOrNickname);
         if (account == null) {
             account = accountRepository.findByNickname(emailOrNickname);
         }

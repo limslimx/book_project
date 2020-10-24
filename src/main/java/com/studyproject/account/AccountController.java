@@ -1,5 +1,6 @@
 package com.studyproject.account;
 
+import com.studyproject.account.kakao.KakaoService;
 import com.studyproject.domain.Account;
 import com.studyproject.settings.PasswordForm;
 import com.studyproject.settings.PasswordFormValidator;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.HashMap;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class AccountController {
     private final SignUpFormValidator signUpFormValidator;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
+    private final KakaoService kakaoService;
 
     //회원가입 시에 입력한 닉네임 또는 이메일이 db에 이미 존재하면 오류 잡아줌
     @InitBinder("signUpForm")
@@ -32,6 +36,20 @@ public class AccountController {
     @InitBinder("passwordForm")
     public void passwordInitBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new PasswordFormValidator());
+    }
+
+    //카카오 로그인 처리 핸들러
+    @RequestMapping("kakao-login")
+    public String kakao_login(@RequestParam("code") String code) throws IOException {
+        String access_token = kakaoService.getAccessToken(code);
+        HashMap<String, Object> userInfo = kakaoService.getUserInfo(access_token);
+
+        Account account = accountRepository.findAccountByEmail((String) userInfo.get("email"));
+        if (account == null) {
+            account = accountService.saveNewKakaoAccount(userInfo);
+        }
+        accountService.login(account);
+        return "index";
     }
 
     //회원가입 폼 핸들러
@@ -62,15 +80,14 @@ public class AccountController {
 
     //이메일 인증 기능 처리 핸들러
     @GetMapping("/check-email-token")
-    public String checkEmailToken(String token, String email, Model model) {
-        Account account = accountRepository.findByEmail(email);
+    public String checkEmailToken(@RequestParam("token") String token, @RequestParam("email") String email, Model model) {
+        Account account = accountRepository.findAccountByEmail(email);
         String view = "account/checked-email";
         if (account == null) {
             model.addAttribute("error", "wrong.email");
             return view;
         }
 
-        log.info("emailToken: " + account.getEmailCheckToken());
         if (!account.isValidToken(token)) {
             model.addAttribute("error", "wrong.token");
             return view;
@@ -119,7 +136,8 @@ public class AccountController {
 
     @PostMapping("/email-login")
     public String sendEmailLoginLink(String email, Model model, RedirectAttributes attributes) {
-        Account byEmail = accountRepository.findByEmail(email);
+        Account byEmail = accountRepository.findAccountByEmail(email);
+        log.info("###################byEmail: "+byEmail.getEmail());
         if (byEmail == null) {
             model.addAttribute("error", "유효한 이메일이 주소가 아닙니다.");
             return "account/email-login";
@@ -131,7 +149,7 @@ public class AccountController {
 
     @GetMapping("/update-password-by-email")
     public String updatePasswordByEmail(String token, String email, Model model) {
-        Account byEmail = accountRepository.findByEmail(email);
+        Account byEmail = accountRepository.findAccountByEmail(email);
         if (byEmail == null || !byEmail.isValidToken(token)) {
             model.addAttribute("error", "비밀번호를 수정할 수 없습니다.");
             return "account/update-password-by-email";
