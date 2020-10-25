@@ -4,7 +4,9 @@ import com.studyproject.book.BookRepository;
 import com.studyproject.domain.Account;
 import com.studyproject.domain.Book;
 import com.studyproject.domain.FavorBook;
+import com.studyproject.domain.Saying;
 import com.studyproject.favorBook.FavorBookRepository;
+import com.studyproject.saying.SayingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -28,7 +30,7 @@ import java.util.List;
 public class CrawlingService {
 
     private final BookRepository bookRepository;
-    private final FavorBookRepository favorBookRepository;
+    private final SayingRepository sayingRepository;
 
     //도서 검색 크롤링 메서드
     public List<Book> getBookInfoFromCrawling(String searchBy) throws IOException {

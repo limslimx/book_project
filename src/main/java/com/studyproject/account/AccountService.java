@@ -23,6 +23,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -60,6 +61,7 @@ public class AccountService implements UserDetailsService {
                 .email((String) userInfo.get("email"))
                 .emailVerified(true)
                 .password(passwordEncoder.encode("12345678"))
+                .joinedAt(LocalDateTime.now())
                 .build();
         return accountRepository.save(account);
     }

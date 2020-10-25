@@ -58,10 +58,9 @@ public class BookReviewController {
     }
 
     //독서록 리스트 화면 핸들러
-    @GetMapping("/bookReview/list/{id}")
-    public String bookReviewList(@CurrentUser Account account, @PathVariable long id, Model model) {
-        Account byId = accountRepository.findAccountById(id);
-        String nickname = byId.getNickname();
+    @GetMapping("/bookReview/list/{nickname}")
+    public String bookReviewList(@CurrentUser Account account, @PathVariable String nickname, Model model) {
+        Account byId = accountRepository.findAccountById(account.getId());
 
         if (byId == null) {
             throw new IllegalArgumentException(nickname + "에 해당되는 사용자가 없습니다.");

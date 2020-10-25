@@ -28,6 +28,7 @@ public class WordCloudController {
     public String wordCount(@CurrentUser Account account, Model model) {
         List<WordCloud> wordCloud = wordCloudRepository.findWordCountByAccountAndCreatedDate(account, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         model.addAttribute("wordCloud", wordCloud);
+        model.addAttribute("account", account);
         return "wordcloud/main";
     }
 }

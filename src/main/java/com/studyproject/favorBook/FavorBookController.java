@@ -4,6 +4,7 @@ import com.studyproject.account.CurrentUser;
 import com.studyproject.book.BookService;
 import com.studyproject.domain.Account;
 import com.studyproject.domain.FavorBook;
+import com.studyproject.wordcloud.WordCloudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ public class FavorBookController {
 
     private final FavorBookRepository favorBookRepository;
     private final BookService bookService;
+    private final WordCloudService wordCloudService;
 
     @GetMapping("/favorBook/list")
     public String favorBookList(@CurrentUser Account account, Model model) {
@@ -34,6 +36,7 @@ public class FavorBookController {
     public @ResponseBody
     String favorBookAdd(@CurrentUser Account account, @PathVariable String bookName, Model model) {
         bookService.addFavorBook(account, bookName);
+        wordCloudService.wordCount(account);
         return bookName;
     }
 
