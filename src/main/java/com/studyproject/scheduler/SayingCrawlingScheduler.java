@@ -24,7 +24,7 @@ public class SayingCrawlingScheduler {
     private final SayingRepository sayingRepository;
 
     //인상적인 글귀 크롤링
-    @Scheduled(cron = "0 0 13 * * *")
+    @Scheduled(cron = "0 15 15 * * *")
     public void getTodayBookInfoFromCrawling() throws IOException {
         int j = 1;
         for (int i = 1; i < 11; i++) {
